@@ -5,6 +5,7 @@
   "main": "server.js",
   "dependencies": {
     "express": "^4.17.1",
+    "gl-renderer": "^0.13.6",
     "vconsole": "^3.3.4"
   },
   "devDependencies": {},
