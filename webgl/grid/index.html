@@ -10,63 +10,62 @@
   <canvas width="400" height="400"></canvas>
   <script src='/node_modules/gl-renderer/dist/gl-renderer.js'></script>
   <script>
-  //顶点着色器:
-  const vertex = `
-    attribute vec2 a_vertexPosition;
-    attribute vec2 uv;
-    varying vec2 vUv;
+    //顶点着色器:
+    const vertex = `
+      attribute vec2 a_vertexPosition;
+      attribute vec2 uv;
+      varying vec2 vUv;
 
-    void main() {
-      gl_PointSize = 1.0;
-      vUv = uv;
-      gl_Position = vec4(a_vertexPosition, 1, 1);
-    }
-  `
-  //片元着色器:
-  const fragment = `
-    #ifdef GL_ES
-    precision mediump float;
-    #endif
-    varying vec2 vUv;
-    uniform float rows;
+      void main() {
+        gl_PointSize = 1.0;
+        vUv = uv;
+        gl_Position = vec4(a_vertexPosition, 1, 1);
+      }
+    `
+    //片元着色器:
+    const fragment = `
+      #ifdef GL_ES
+      precision mediump float;
+      #endif
+      varying vec2 vUv;
+      uniform float rows;
 
-    void main() {
-      vec2 st = fract(vUv * rows);  // fract用来取小数，rows可以看成是重复的周期
-      float d1 = step(st.x, 0.9);  // 当0.9<st.x时返回0， 否则返回1
-      float d2 = step(0.1, st.y);  // 当st.y<0.1时返回0，否则返回1
-      gl_FragColor.rgb = mix(vec3(0.8), vec3(1.0), d1 * d2);  // vec(1.0)-白色， vec(0.8)-灰色， 当d1*d2为0时，mix返回vec(0.8)，否则返回vec(1.0)
-      gl_FragColor.a = 1.0;
-    }
-  `
+      void main() {
+        vec2 st = fract(vUv * rows);  // fract用来取小数，rows可以看成是重复的周期
+        float d1 = step(st.x, 0.9);  // 当0.9<st.x时返回0， 否则返回1
+        float d2 = step(0.1, st.y);  // 当st.y<0.1时返回0，否则返回1
+        gl_FragColor.rgb = mix(vec3(0.8), vec3(1.0), d1 * d2);  // vec(1.0)-白色， vec(0.8)-灰色， 当d1*d2为0时，mix返回vec(0.8)，否则返回vec(1.0)
+        gl_FragColor.a = 1.0;
+      }
+    `
 
-  const canvas = document.querySelector('canvas');
-  const renderer = new GlRenderer(canvas);
+    const canvas = document.querySelector('canvas');
+    const renderer = new GlRenderer(canvas);
 
-  const program = renderer.compileSync(fragment, vertex);
-  renderer.useProgram(program);
+    const program = renderer.compileSync(fragment, vertex);
+    renderer.useProgram(program);
 
-  renderer.uniforms.rows = 20;
+    renderer.uniforms.rows = 20;
   
-  renderer.setMeshData([{
-    positions: [
-      [-1, -1],
-      [-1, 1],
-      [1, 1],
-      [1, -1],
-    ], // 定义顶点坐标
-    attributes: {
-      uv: [
-        [0, 0],
-        [0, 1],
+    renderer.setMeshData([{
+      positions: [
+        [-1, -1],
+        [-1, 1],
         [1, 1],
-        [1, 0],
-      ],
-    }, // 定义uv坐标
-    cells: [[0, 1, 2], [2, 0, 3]], // 三角剖分的两个点
-  }]);
+        [1, -1],
+      ], // 定义顶点坐标
+      attributes: {
+        uv: [
+          [0, 0],
+          [0, 1],
+          [1, 1],
+          [1, 0],
+        ],
+      }, // 定义uv坐标
+      cells: [[0, 1, 2], [2, 0, 3]], // 三角剖分的两个点
+    }]);
 
-  renderer.render();
-
+    renderer.render();
   </script>
 </body>
 </html>
