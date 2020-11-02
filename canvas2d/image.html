@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>image</title>
+</head>
+<body>
+  <canvas width="0" height="0"></canvas>
+  
+  <script type="module">
+    import { loadImage, getImageData, traverse, transformColor, saturate, grayscale, contrast, brightness, gaussianBlur } from './util/image.js';
+    
+    const canvas = document.querySelector('canvas');
+    const context = canvas.getContext('2d');
+
+    (async function () {
+      // 异步加载图片
+      const img = await loadImage('./yl.jpeg');
+      // 获取图片的 imageData 数据对象
+      const imageData = getImageData(img);
+      // 遍历 imageData 数据对象
+      gaussianBlur(imageData.data, imageData.width, imageData.height)
+      traverse(imageData, ({r, g, b, a}) => { // 对每个像素进行灰度化处理
+        return transformColor( [r, g, b, a], contrast(1.1), grayscale(0.4), saturate(1.2))
+      });
+      canvas.width = imageData.width;
+      canvas.height = imageData.height;
+      context.putImageData(imageData, 0, 0);
+    }());
+  </script>
+  <script>
+    function exportCanvasAsPNG(fileName) {
+      const canvas = document.querySelector('canvas');
+      var MIME_TYPE = "image/png";
+
+      var imgURL = canvas.toDataURL(MIME_TYPE);
+
+      var dlLink = document.createElement('a');
+      dlLink.download = fileName;
+      dlLink.href = imgURL;
+      dlLink.dataset.downloadurl = [MIME_TYPE, dlLink.download, dlLink.href].join(':');
+
+      document.body.appendChild(dlLink);
+      dlLink.click();
+      document.body.removeChild(dlLink);
+    }
+  </script>
+  <button onclick="exportCanvasAsPNG('yl')">下载</button>
+</body>
+</html>
